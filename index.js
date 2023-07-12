@@ -4,21 +4,19 @@ var connected = [];
 const wss = new WebSocket.Server({port:8080});
 
 wss.on('connection',ws => {
-	var username = '';
-	
-	
-	console.log('[server] connected client...');
-	
+	var username = '';	
 	
 	ws.on('message',message=>{
 		var _msg = JSON.parse(message);
+
 		if (_msg['event'] == 'login'){
+			username = _msg['username'];
 			connected.push(_msg['username']);
-			message['connected'] = connected;
-			console.log(message);
+			_msg['connected'] = connected;
+
 			wss.clients.forEach(client =>{
 				if (client.readyState == WebSocket.OPEN){
-					client.send(message, {binary: WebSocket.binary});
+					client.send(JSON.stringify(_msg), {binary: WebSocket.binary});
 				}
 			});
 			return;
@@ -33,12 +31,13 @@ wss.on('connection',ws => {
 	})
 
 	ws.on('close', function (message) {
-	  console.log(`[server] disconnect ${username} ...`);
+	  connected.splice(connected.indexOf(username),1);
 	  wss.clients.forEach(function each (client) {
 	    if (client !== ws && client.readyState === WebSocket.OPEN) {
-	      client.send(JSON.stringify({
-		username : username,
-		event: 'logout',
+			client.send(JSON.stringify({
+				username : username,
+				event: 'logout',
+				connected:connected
 	      }))
 	    }
 	  })
