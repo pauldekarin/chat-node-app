@@ -16,6 +16,7 @@ wss.on('connection',ws => {
 	})
 
 	ws.on('close', function (message) {
+	  console.log(`[server] disconnect ${username} ...`);
 	  wss.clients.forEach(function each (client) {
 	    if (client !== ws && client.readyState === WebSocket.OPEN) {
 	      client.send(JSON.stringify({
