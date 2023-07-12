@@ -15,6 +15,7 @@ wss.on('connection',ws => {
 		if (_msg['event'] == 'login'){
 			connected.push(_msg['username']);
 			message['connected'] = connected;
+			console.log(message);
 			wss.clients.forEach(client =>{
 				if (client.readyState == WebSocket.OPEN){
 					client.send(message, {binary: WebSocket.binary});
