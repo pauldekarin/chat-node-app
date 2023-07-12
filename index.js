@@ -22,9 +22,7 @@ wss.on('connection',ws => {
 			});
 			return;
 		}
-		if (username == '') {
-			username = JSON.parse(message)['username'];
-		}
+
 		
 		wss.clients.forEach(client => {
 			if (client.readyState == WebSocket.OPEN && !(ws == client)){
