@@ -1,7 +1,6 @@
-const WebSocket = require('ws');
-var connected = [];
-
-const wss = new WebSocket.Server({port:8080});
+let WebSocket = require('ws');
+let wss = new WebSocket.Server({port:8080});
+wss.connected = [];
 
 wss.on('connection',ws => {
 	ws.on('message',message=>{
@@ -9,8 +8,8 @@ wss.on('connection',ws => {
 
 		if (_msg['event'] == 'login'){
 			ws.username = _msg['username'];
-			connected.push(_msg['username']);
-			_msg['connected'] = connected;
+			wss.connected.push(_msg['username']);
+			_msg['connected'] = wss.connected;
 
 			wss.clients.forEach(client =>{
 				if (client.readyState == WebSocket.OPEN){
@@ -37,13 +36,13 @@ wss.on('connection',ws => {
 	})
 
 	ws.on('close', function (message) {
-	  connected.splice(connected.indexOf(ws.username),1);
+	  wss.connected.splice(connected.indexOf(ws.username),1);
 	  wss.clients.forEach(function each (client) {
 	    if (client !== ws && client.readyState === WebSocket.OPEN) {
 			client.send(JSON.stringify({
 				username : ws.username,
 				event: 'logout',
-				connected:connected
+				connected:wss.connected
 	      }))
 	    }
 	  })
