@@ -36,7 +36,7 @@ wss.on('connection',ws => {
 	})
 
 	ws.on('close', function (message) {
-	  wss.connected.splice(connected.indexOf(ws.username),1);
+	  wss.connected.splice(wss.connected.indexOf(ws.username),1);
 	  wss.clients.forEach(function each (client) {
 	    if (client !== ws && client.readyState === WebSocket.OPEN) {
 			client.send(JSON.stringify({
